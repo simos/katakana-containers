@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "kata-sys-util",
+    "kata-types",
+    "logging",
+    "oci",
+    "protocols",
+    "safe-path",
+    "test-utils",
+]
+resolver = "2"

@@ -1,0 +1,33 @@
+# Copyright (c) 2020-2021 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+include ../../../utils.mk
+
+.DEFAULT_GOAL := default
+default: build
+
+build:
+	@RUSTFLAGS="$(EXTRA_RUSTFLAGS) --deny warnings" cargo build --target $(TRIPLE) --$(BUILD_TYPE)
+
+clean:
+	cargo clean
+
+vendor:
+	cargo vendor
+
+test:
+	@cargo test --all -- --nocapture
+
+install:
+
+check: standard_rust_check
+
+.PHONY: \
+	build \
+	check \
+	clean \
+	install \
+	test \
+	vendor

@@ -1,4 +1,4 @@
-name: kata-containers
+name: katakana-containers
 website: https://github.com/kata-containers/kata-containers
 summary: Build lightweight VMs that seamlessly plug into the containers ecosystem
 description: |

@@ -10,6 +10,14 @@ confinement: classic
 adopt-info: metadata
 base: core20
 
+package-repositories:
+  - type: apt
+    formats: [deb]
+    components: [stable]
+    suites: [focal]
+    key-id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    url: https://download.docker.com/linux/ubuntu
+
 parts:
   metadata:
     plugin: nil
@@ -47,7 +55,7 @@ parts:
       # put everything in stage
       cd "${SNAPCRAFT_STAGE}"
 
-      version="$(${yq} r ${kata_dir}/versions.yaml languages.golang.meta.newest-version)"
+      version="$(${yq} r ${kata_dir}/project/versions.yaml languages.golang.meta.newest-version)"
       tarfile="go${version}.${goos}-${goarch}.tar.gz"
       curl -LO https://golang.org/dl/${tarfile}
       tar -xf ${tarfile} --strip-components=1
@@ -65,7 +73,7 @@ parts:
       # put everything in stage
       cd "${SNAPCRAFT_STAGE}"
 
-      version="$(${yq} r ${kata_dir}/versions.yaml languages.rust.meta.newest-version)"
+      version="$(${yq} r ${kata_dir}/project/versions.yaml languages.rust.meta.newest-version)"
       if ! command -v rustup > /dev/null; then
         curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${version}
       fi
@@ -94,12 +102,6 @@ parts:
       - gnupg
       - lsb-release
       - runc
-    package-repositories: 
-      - type: apt
-        formats: [deb, deb-src]
-        components: [main]
-        key-id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-        url: https://download.docker.com/linux/ubuntu
     override-build: |
       source "${SNAPCRAFT_PROJECT_DIR}/snap/local/snap-common.sh"
 
@@ -144,8 +146,8 @@ parts:
       export AGENT_INIT=yes
       export USE_DOCKER=1
       export DEBUG=1
-      initrd_distro=$(${yq} r -X ${kata_dir}/versions.yaml assets.initrd.architecture.${arch}.name)
-      image_distro=$(${yq} r -X ${kata_dir}/versions.yaml assets.image.architecture.${arch}.name)
+      initrd_distro=$(${yq} r -X ${kata_dir}/project/versions.yaml assets.initrd.architecture.${arch}.name)
+      image_distro=$(${yq} r -X ${kata_dir}/project/versions.yaml assets.image.architecture.${arch}.name)
       case "$arch" in
         x86_64)
           # In some build systems it's impossible to build a rootfs image, try with the initrd image
@@ -204,13 +206,13 @@ parts:
     override-build: |
       source "${SNAPCRAFT_PROJECT_DIR}/snap/local/snap-common.sh"
 
-      kernel_version="$(${yq} r $versions_file assets.kernel.version)"
+      kernel_version="$(${yq} r /root/stage/gopath/src/github.com/kata-containers/kata-containers/project/versions.yaml assets.kernel.version)"
       #Remove extra 'v'
       kernel_version="${kernel_version#v}"
 
       [ "${arch}" = "s390x" ] && sudo apt-get --no-install-recommends install -y libssl-dev
 
-      cd "${kata_dir}/tools/packaging/kernel"
+      cd "${kata_dir}/project/tools/packaging/kernel"
       kernel_dir_prefix="kata-linux-"
 
       # Setup and build kernel

@@ -105,6 +105,7 @@ parts:
     override-build: |
       source "${SNAPCRAFT_PROJECT_DIR}/snap/local/snap-common.sh"
 
+      export http_proxy="http://localhost:8888"
       sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 
       echo "Unmasking docker service"
